@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Youtube -> no cookie</title>
+
+    <style>
+      .input-wrapper {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .no-cookie-content {
+        display: none;
+      }
+
+      .no-cookie-content--visible {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .error-message {
+        display: none;
+      }
+
+      .error-message--visible {
+        display: block;
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="input-wrapper">
+      <input type="text" id="url" />
+      <button id="btn">Watch without tracking</button>
+      <span class="error-message">Oops, something wrong with url. Please check url once again</span>
+    </div>
+
+    <div class="no-cookie-content">
+      <span>Watch here or go directly to <a id="no-cookie-url" href=""></a></span>
+
+      <iframe
+        id="no-cookie-iframe"
+        width="100%"
+        height="560px"
+        src=""
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+    </div>
+  </body>
+  <script>
+    const inputElement = document.querySelector("#url");
+    const buttonElement = document.querySelector("#btn");
+    const noCookieUrlElement = document.querySelector("#no-cookie-url");
+    const noCookieContentElement = document.querySelector(".no-cookie-content");
+    const noCookieIframeElement = document.querySelector("#no-cookie-iframe");
+    const errorMessageElement = document.querySelector(".error-message");
+
+    const getNoCookieUrl = () => {
+      const url =
+        inputElement.value ||
+        "https://www.youtube.com/watch?v=Ope4lYMYgVo&ab_channel=Savjz";
+
+      const videoIdRegexp =
+        /^(https?:)?(\/\/)?((www\.|m\.)?youtube(-nocookie)?\.com\/((watch)?\?(feature=\w*&)?vi?=|embed\/|vi?\/|e\/)|youtu.be\/)([\w\-]{10,20})/i;
+      const match = url.match(videoIdRegexp);
+
+      if (match) {
+        const videoId = match[9];
+        return `https://www.youtube-nocookie.com/embed/${videoId}`;
+      }
+      return "";
+    };
+
+    buttonElement.addEventListener("click", () => {
+      const noCookieUrl = getNoCookieUrl();
+      errorMessageElement.classList.remove("error-message--visible");
+
+      if (!noCookieUrl) {
+        errorMessageElement.classList.add("error-message--visible");
+        noCookieContentElement.classList.remove("no-cookie-content--visible");
+        return;
+      }
+
+      noCookieUrlElement.href = noCookieUrl;
+      noCookieUrlElement.textContent = noCookieUrl;
+
+      noCookieIframeElement.src = noCookieUrl;
+      noCookieContentElement.classList.add("no-cookie-content--visible");
+
+      window.history.pushState(
+        undefined,
+        undefined,
+        window.location.origin + "?" + "url=" + noCookieUrl
+      );
+    });
+  </script>
+</html>
