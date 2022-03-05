@@ -7,11 +7,28 @@
     <title>Youtube -> no cookie</title>
 
     <style>
-      .input-wrapper {
+      body {
+        margin: 0;
+        background-color: #1b1c22;
+        color: #f8f4f9;
+        font-family: sans-serif;
+      }
+
+      .controls {
         display: flex;
-        flex-direction: column;
         justify-content: center;
         align-items: center;
+        margin-top: 3rem;
+      }
+
+      .input-wrapper {
+        width: 100%;
+        max-width: 600px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
       }
 
       .no-cookie-content {
@@ -23,6 +40,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+        font-size: 0.75rem;
       }
 
       .error-message {
@@ -31,19 +49,73 @@
 
       .error-message--visible {
         display: block;
-        color: red;
+        position: absolute;
+        color: #e63946;
+        top: 2rem;
+        font-size: 0.75rem;
+      }
+
+      #url,
+      #url:focus {
+        color: #f8f4f9;
+        background-color: transparent;
+        outline: none;
+        border: none;
+        border-bottom: 2px solid #f8f4f9;
+        box-shadow: none;
+        width: 100%;
+        text-align: center;
+        padding: 0.25rem;
+      }
+
+      #btn {
+        background-color: transparent;
+        border: 2px solid #5fdd9d;
+        border-radius: 4px;
+        color: #5fdd9d;
+        padding: 0.5rem 2rem;
+        margin: 2rem;
+        transition: all 300ms ease-in-out;
+        cursor: pointer;
+      }
+
+      #btn:hover {
+        border: 2px solid #5fdd9d;
+        color: #1b1c22;
+        background-color: #5fdd9d;
+      }
+
+      #no-cookie-url,
+      #no-cookie-url:visited {
+        color: #f8f4f9;
+        transition: color 300ms ease-in-out;
+      }
+
+      #no-cookie-url:hover {
+        color: #e63946;
+      }
+
+      #no-cookie-iframe {
+        max-width: 1000px;
+        margin-top: 0.75rem;
       }
     </style>
   </head>
   <body>
-    <div class="input-wrapper">
-      <input type="text" id="url" />
+    <div class="controls">
+      <div class="input-wrapper">
+        <input type="text" id="url" placeholder="Paste youtube url here" />
+        <span class="error-message"
+          >Oops, something wrong with url. Please check url once again</span
+        >
+      </div>
       <button id="btn">Watch without tracking</button>
-      <span class="error-message">Oops, something wrong with url. Please check url once again</span>
     </div>
 
     <div class="no-cookie-content">
-      <span>Watch here or go directly to <a id="no-cookie-url" href=""></a></span>
+      <span
+        >Watch here or go directly to <a id="no-cookie-url" href=""></a
+      ></span>
 
       <iframe
         id="no-cookie-iframe"
@@ -65,9 +137,7 @@
     const errorMessageElement = document.querySelector(".error-message");
 
     const getNoCookieUrl = () => {
-      const url =
-        inputElement.value ||
-        "https://www.youtube.com/watch?v=Ope4lYMYgVo&ab_channel=Savjz";
+      const url = inputElement.value;
 
       const videoIdRegexp =
         /^(https?:)?(\/\/)?((www\.|m\.)?youtube(-nocookie)?\.com\/((watch)?\?(feature=\w*&)?vi?=|embed\/|vi?\/|e\/)|youtu.be\/)([\w\-]{10,20})/i;
@@ -95,12 +165,6 @@
 
       noCookieIframeElement.src = noCookieUrl;
       noCookieContentElement.classList.add("no-cookie-content--visible");
-
-      window.history.pushState(
-        undefined,
-        undefined,
-        window.location.origin + "?" + "url=" + noCookieUrl
-      );
     });
   </script>
 </html>
